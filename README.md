@@ -1,3 +1,5 @@
+#Deprecated
+
 # Please Have a basic knoledge, also have python installed
 
 Make sure you have the trello api: https://roblox.com/library/214265621/Trello-API-Original
