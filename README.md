@@ -1,4 +1,4 @@
-#Deprecated
+# Deprecated
 
 # Please Have a basic knoledge, also have python installed
 
