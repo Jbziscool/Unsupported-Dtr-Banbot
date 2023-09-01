@@ -10,12 +10,16 @@ load_dotenv()
 
 
 
-bot = commands.Bot(command_prefix="-", intents=discord.Intents.all())
+bot = commands.Bot(command_prefix="-", intents=discord.Intents.all()) #declare the bot variable used for discord.py
 
 
 importpeopleids = [1058768145722134528] #DONT EDIT UNLESS YOU KNOW WHAT YOUR DOING
+
+#check if the user declaring the command is one of the people in the importpeopleids array
 def botowners(ctx):
     return ctx.author.id in importpeopleids
+
+#get this stuff form the .env file
 apikey = os.getenv('apikey')
 token = os.getenv('token')
 idlist = os.getenv('idlist')
@@ -25,19 +29,19 @@ webhook = os.getenv('webhook')
 
 
 
-
+#wait for when the bot is ready
 @bot.listen('on_ready')
 async def on_ready():
 
     print(f'bot online- {bot.user} - {bot.user.id}')
     for s in bot.guilds:
-      print(f'{s} - {s.id}')
+      print(f'{s} - {s.id}') #print each guild and the guild id of the bot it is in
       
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-
+#send a discord webhook to the webhook used in the .env file with the message parsed in
 def sendlog(msg):
     json = {
         "content": msg,
@@ -50,7 +54,7 @@ def sendlog(msg):
 
 
 
-
+#gets the username from an api
 def getusername(userid):
   r = requests.get(f'https://api.newstargeted.com/roblox/users/v2/user.php?userId={userid}')
   response = r.json()
@@ -58,6 +62,7 @@ def getusername(userid):
   print(plrusername)
 
 
+#gets the userid from username from an api
 def getuserid(username):
     r = requests.get(f'https://api.newstargeted.com/roblox/users/v2/user.php?username={username}')
     response = r.json()
@@ -67,41 +72,41 @@ def getuserid(username):
 
 @bot.command()
 #@commands.has_role()
-async def ban(ctx, user,*, reason=None):
-    if user.isnumeric():
-      opuser = getusername(user)
+async def ban(ctx, user,*, reason=None): #if the reason is not specified do this so it doesnt error out
+    if user.isnumeric(): #check if the user argument is a number
+      opuser = getusername(user) #if so then get their username
       print('User id')
-      jbziscool = 'd'
-    else:
+      jbziscool = 'd' #i forgor what this varibale was for
+    else: #if its not (i know i should use elif statements incase of errors yea yea i know) then get the userid
         user = getuserid(user)
 
     url = "https://api.trello.com/1/cards"
 
     headers = {
-      "Accept": "application/json"
+      "Accept": "application/json" #declare the type as application/json
     }
 
-    query = {
+    query = { #this will be the query that is send in the request
       'idList': idlist,
       'key': apikey,
       'token': token
     }
 
     responsee = requests.request(
-      "POST",
-      url,
-      headers=headers,
+      "POST", #post rquest
+      url, # to the url
+      headers=headers, #with these headers
       params=query
     )
 
-    a = responsee.json()
-    this = a['shortLink']
+    a = responsee.json() #get the https or http response as a json
+    this = a['shortLink'] # get "shortlink" from the json response
 
 
-    url = f"https://api.trello.com/1/cards/{this}"
+    url = f"https://api.trello.com/1/cards/{this}" #get the shortlink thing (sorry i am so tired rn)
     query = {'key': apikey, 'token': token}
     payload = {'name': user}
-    response = requests.request("PUT", url, params=query, data=payload)
+    response = requests.request("PUT", url, params=query, data=payload) # send a put request
 
     try:
       plrusernamefunc = getusername(user)
@@ -110,8 +115,8 @@ async def ban(ctx, user,*, reason=None):
       await ctx.send(f'\nBANNED ({ctx.author}): {user} - use key `{this}` to unban')
 
     sendlog(f'Banned id: `{user}` with key `{this}`')
-    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="Exploiters get banned - Jb9#6554"))
-    await ctx.message.add_reaction('\N{WHITE HEAVY CHECK MARK}')
+    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="Exploiters get banned - jbziscool"))
+    await ctx.message.add_reaction('\N{WHITE HEAVY CHECK MARK}') #react with checkmakr
 
 
 
@@ -137,7 +142,7 @@ async def unban(ctx, trelloident,*, reason=None):
 
 
 
-
+#this is a command to execute python code with a command
 @bot.command(aliases=['e', 'evaluate'])
 @commands.check(botowners)
 async def eval(ctx, *, code):
@@ -187,4 +192,4 @@ async def eval(ctx, *, code):
 
 
 
-bot.run(bottoken)
+bot.run(bottoken) #start the bot
